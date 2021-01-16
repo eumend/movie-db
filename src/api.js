@@ -1,4 +1,5 @@
 const apiKey = `8868e982d0c8b2c8e5dd414627ebfd89`;
+let config = {}
 
 const fetchRequest = (url) => {
     return fetch(url, {
@@ -13,21 +14,36 @@ async function callApi(url) {
     return fetchRequest(`https://api.themoviedb.org/3/${formatted}api_key=${apiKey}&language=en-US`)
 }
 
+async function fetchConfig(){
+    config = await callApi('configuration')
+    console.log('config', config)
+}
+
 const FOLD_ITEMS = {
     movie: {
-        getCredits: getMovieCredits
+        getCredits: getMovieCredits,
+        getImagePath: movie => movie.poster_path,
     },
     tv: {
-        getCredits: getShowCredits
+        getCredits: getShowCredits,
+        getImagePath: movie => movie.poster_path,
     },
     person: {
         getCredits: getPersonCredits,
+        getImagePath: movie => movie.profile_path,
     }
+}
+
+function getImageUrl(item, size){
+    const imagePath = FOLD_ITEMS[item.media_type].getImagePath(item)
+    if(imagePath) return `${config.images.base_url}${size}/${imagePath}`
+    return ''
 }
 
 function formatItem(item, media_type) {
     return {
         media_type,
+        image_big: getImageUrl({ ...item, media_type }, 'w500'),
         ...item
     }
 }
@@ -89,8 +105,7 @@ function mapCreditList(items, media_type){
 const api = {
     searchBy,
     getItemDetails,
-    getPersonCredits,
-    getShowCredits,
+    fetchConfig,
 }
 
 export default api

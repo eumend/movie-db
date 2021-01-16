@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect,} from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Spinner, Container } from "react-bootstrap"
 import SearchBar from './components/SearchBar'
@@ -15,6 +15,10 @@ function App() {
   const [currentItem, setCurrentItem] = useState(null)
   const [suggestions, setSuggestions] = useState([])
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    api.fetchConfig()
+  }, [])
 
   async function onSearch(term) {
     const results = await api.searchBy(term, category)
