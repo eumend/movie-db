@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Form, Button, Container, InputGroup, DropdownButton, Dropdown, ButtonGroup } from "react-bootstrap"
+import { Form, Button, InputGroup, DropdownButton, Dropdown, ButtonGroup } from "react-bootstrap"
 
 const CATEGORIES = ['all', 'movie', 'tv', 'person']
 
@@ -54,7 +54,7 @@ function SearchBar({ currentCategory, suggestions, onSearch, onCategorySelected,
             {suggestions.length > 0 && (
                 <ButtonGroup aria-label="Search Suggestions">
                     {
-                        suggestions.slice(0, 6).map(s => <Button key={s.id} onClick={() => onSuggestionSelected(s)} variant="secondary">{s.label}</Button>)
+                        suggestions.slice(0, 6).map(s => <Button key={s.id} onClick={() => onSuggestionSelected(s)} variant="secondary">{s.shortLabel}</Button>)
                     }
                 </ButtonGroup>
             )}

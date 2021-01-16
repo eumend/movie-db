@@ -1,17 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Jumbotron, ListGroup, Spinner } from "react-bootstrap"
-import api from '../../api'
+import React from "react";
+import { Jumbotron } from "react-bootstrap"
+import Credits from '../Credits'
 
-export default function Person({ data: person, onSelected }) {
-    const [personDetails, setPersonDetails] = useState(null)
-    useEffect(() => {
-        async function fetchDetails() {
-            const details = await api.getPersonDetails(person.id)
-            console.log('person details', details)
-            setPersonDetails(details)
-        }
-        fetchDetails()
-    }, [person.id]);
+export default function Person({ person, onSelected }) {
     return (
         <>
             <Jumbotron>
@@ -20,32 +11,7 @@ export default function Person({ data: person, onSelected }) {
                     {person.biography}
                 </p>
             </Jumbotron>
-            {
-                personDetails !== null
-                    ? (
-                        <>
-                            <ListGroup>
-                                {
-                                    personDetails.credits.crew.map(item => (
-                                        <ListGroup.Item key={`crew-${item.id}`} onClick={() => onSelected(item)}>
-                                            {item.label}
-                                        </ListGroup.Item>
-                                    ))
-                                }
-                            </ListGroup>
-                            <ListGroup>
-                                {
-                                    personDetails.credits.cast.map(item => (
-                                        <ListGroup.Item key={`cast-${item.id}`} onClick={() => onSelected(item)}>
-                                            {item.label}
-                                        </ListGroup.Item>
-                                    ))
-                                }
-                            </ListGroup>
-                        </>
-                    )
-                    : <Spinner animation="border" />
-            }
+            <Credits credits={person.credits} onSelected={onSelected}/>
         </>
     )
 }

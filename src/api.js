@@ -13,24 +13,25 @@ async function callApi(url) {
     return fetchRequest(`https://api.themoviedb.org/3/${formatted}api_key=${apiKey}&language=en-US`)
 }
 
-function getItemLabel(item, media_type) {
-    switch (media_type) {
-        case 'movie':
-            return item.title
-        case 'tv':
-            return item.name
-        case 'person':
-            return item.name
-        default:
-            return ""
+const FOLD_ITEMS = {
+    movie: {
+        getShortLabel: movie => movie.title,
+        getCredits: getMovieCredits
+    },
+    tv: {
+        getShortLabel: show => show.name,
+        getCredits: getShowCredits
+    },
+    person: {
+        getShortLabel: person => person.name,
+        getCredits: getPersonCredits
     }
 }
-
 
 function formatItem(item, media_type) {
     return {
         media_type,
-        label: getItemLabel(item, media_type),
+        shortLabel: FOLD_ITEMS[media_type].getShortLabel(item),
         ...item
     }
 }
@@ -42,54 +43,58 @@ async function searchBy(query, media_type = 'all', page = 1) {
     return results.map(item => formatItem(item, all ? item.media_type : media_type))
 };
 
-async function getDetails(type, id) {
-    return callApi(`${type}/${id}`).then(response => {
-        return response;
-    });
+async function getItemDetails(itemId, mediaType) {
+    let detailsPromise = callApi(`${mediaType}/${itemId}`)
+    let creditsPromise = FOLD_ITEMS[mediaType].getCredits(itemId)
+    const [details, credits] = await Promise.all([detailsPromise, creditsPromise])
+    return { ...details, credits }
 };
 
-async function getMovieDetails(movieId) {
-    const [credits] = await Promise.all([
-        callApi(`movie/${movieId}/credits`)
-    ])
-    return {
-        credits: {
-            cast: credits.cast.map(p => formatItem(p, 'person')),
-            crew: credits.crew.map(p => formatItem(p, 'person')),
-        }
-    }
+async function getMovieCredits(movieId) {
+    const credits = await callApi(`movie/${movieId}/credits`)
+    return mapCredits(credits, 'person')
 };
 
-async function getPersonDetails(personId) {
-    const [credits] = await Promise.all([
-        callApi(`person/${personId}/combined_credits`)
-    ])
-    return {
-        credits: {
-            cast: credits.cast.map(p => formatItem(p, p.media_type)),
-            crew: credits.crew.map(p => formatItem(p, p.media_type)),
-        }
-    }
+async function getPersonCredits(personId) {
+    const credits = await callApi(`person/${personId}/combined_credits`)
+    return mapCredits(credits)
 };
 
-async function getShowDetails(showId) {
-    const [credits] = await Promise.all([
-        callApi(`tv/${showId}/aggregate_credits`)
-    ])
-    return {
-        credits: {
-            cast: credits.cast.map(p => formatItem(p, 'person')),
-            crew: credits.crew.map(p => formatItem(p, 'person')),
-        }
-    }
+async function getShowCredits(showId) {
+    const credits = await callApi(`tv/${showId}/aggregate_credits`)
+    return mapCredits(credits, 'person')
 };
+
+function mapCredits(credits, media_type){
+    return {
+        cast: mapCreditList(credits.cast, media_type),
+        crew: mapCreditList(credits.crew, media_type),
+    }
+}
+
+function mapCreditList(items, media_type){
+    let itemsMap = items.reduce((acc, item) => {
+        if(acc[item.id]) {
+            const updatedFields = {
+                department: `${acc[item.id].department}, ${item.department}`
+            }
+            acc[item.id] = {
+                ...acc[item.id],
+                ...updatedFields
+            }
+        } else {
+            acc[item.id] = formatItem(item, media_type || item.media_type)
+        }
+        return acc
+    }, {})
+    return Object.keys(itemsMap).map(k => itemsMap[k])
+}
 
 const api = {
     searchBy,
-    getDetails,
-    getMovieDetails,
-    getPersonDetails,
-    getShowDetails,
+    getItemDetails,
+    getPersonCredits,
+    getShowCredits,
 }
 
 export default api
