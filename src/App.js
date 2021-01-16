@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Spinner } from "react-bootstrap"
+import { Spinner, Container } from "react-bootstrap"
 import SearchBar from './components/SearchBar'
 import SearchResults from './components/SearchResults'
 import MovieDetail from './components/Detail/MovieDetail'
@@ -66,14 +66,14 @@ function App() {
   }
 
   return (
-    <>
+    <Container fluid>
       <SearchBar currentCategory={category} suggestions={suggestions} onSearch={onSearch} onSearchTerm={onSearchTerm} onCategorySelected={onCategorySelected} onSuggestionSelected={onSelected} />
       {
         loading
           ? <Spinner animation="border" />
           : renderDetails()
       }
-    </>
+    </Container>
   );
 }
 
