@@ -1,6 +1,6 @@
 import React from "react";
 import { Jumbotron } from "react-bootstrap"
-import Credits from '../Credits'
+import Credits from './Credits'
 
 export default function Show({ show, onSelected }) {
     return (

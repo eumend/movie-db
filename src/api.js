@@ -15,23 +15,19 @@ async function callApi(url) {
 
 const FOLD_ITEMS = {
     movie: {
-        getShortLabel: movie => movie.title,
         getCredits: getMovieCredits
     },
     tv: {
-        getShortLabel: show => show.name,
         getCredits: getShowCredits
     },
     person: {
-        getShortLabel: person => person.name,
-        getCredits: getPersonCredits
+        getCredits: getPersonCredits,
     }
 }
 
 function formatItem(item, media_type) {
     return {
         media_type,
-        shortLabel: FOLD_ITEMS[media_type].getShortLabel(item),
         ...item
     }
 }
@@ -43,11 +39,11 @@ async function searchBy(query, media_type = 'all', page = 1) {
     return results.map(item => formatItem(item, all ? item.media_type : media_type))
 };
 
-async function getItemDetails(itemId, mediaType) {
-    let detailsPromise = callApi(`${mediaType}/${itemId}`)
-    let creditsPromise = FOLD_ITEMS[mediaType].getCredits(itemId)
+async function getItemDetails(item) {
+    let detailsPromise = callApi(`${item.media_type}/${item.id}`)
+    let creditsPromise = FOLD_ITEMS[item.media_type].getCredits(item.id)
     const [details, credits] = await Promise.all([detailsPromise, creditsPromise])
-    return { ...details, credits }
+    return { ...formatItem(details, item.media_type), credits }
 };
 
 async function getMovieCredits(movieId) {

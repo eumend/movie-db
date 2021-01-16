@@ -3,9 +3,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Spinner, Container } from "react-bootstrap"
 import SearchBar from './components/SearchBar'
 import ItemList from './components/ItemList'
-import MovieDetail from './components/Detail/MovieDetail'
-import ShowDetail from './components/Detail/ShowDetail'
-import PersonDetail from './components/Detail/PersonDetail'
+import MovieDetail from './components/MovieDetail'
+import ShowDetail from './components/ShowDetail'
+import PersonDetail from './components/PersonDetail'
 import api from "./api"
 
 function App() {
@@ -24,7 +24,7 @@ function App() {
 
   async function onSelected(item) {
     setLoading(true)
-    const details = await api.getItemDetails(item.id, item.media_type)
+    const details = await api.getItemDetails(item)
     console.log('details', details)
     setCurrentItem(details)
     setPage(item.media_type)
@@ -53,9 +53,9 @@ function App() {
       case 'movie':
         return <MovieDetail movie={currentItem} onSelected={onSelected} />
       case 'tv':
-        return <ShowDetail data={currentItem} onSelected={onSelected} />
+        return <ShowDetail show={currentItem} onSelected={onSelected} />
       case 'person':
-        return <PersonDetail data={currentItem} onSelected={onSelected} />
+        return <PersonDetail person={currentItem} onSelected={onSelected} />
       default:
         return null
     }

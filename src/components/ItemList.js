@@ -1,12 +1,13 @@
 import React from "react";
 import { ListGroup } from "react-bootstrap"
+import { getDate } from "./utils";
 
 function Item({ item }) {
     switch (item.media_type) {
         case 'movie':
-            return `(Movie) ${item.title} (${(new Date(item.release_date)).getFullYear()})`
+            return `(Movie) ${item.title} (${getDate(item)})`
         case 'tv':
-            return `(TV) ${item.name} (${(new Date(item.first_air_date)).getFullYear()})`
+            return `(TV) ${item.name} (${getDate(item)})`
         case 'person':
             return `(Person) ${item.name} (${item.department || item.known_for_department})`
         default:
