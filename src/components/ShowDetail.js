@@ -5,7 +5,7 @@ import { getDate, getGenres, getPopularity } from "./utils";
 
 export default function Show({ show, onSelected }) {
     return (
-        <Container>
+        <div className="item-detail">
             <Jumbotron>
                 <Row>
                     {
@@ -27,6 +27,6 @@ export default function Show({ show, onSelected }) {
                 </Row>
             </Jumbotron>
             <Credits credits={show.credits} onSelected={onSelected} />
-        </Container>
+        </div>
     )
 }

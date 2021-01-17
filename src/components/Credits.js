@@ -5,7 +5,7 @@ export default function Credits({credits, onSelected}){
     return (
         <>
         {
-            credits.cast.length > 0 && credits.crew.length > 0 && (
+            (credits.cast.length > 0 || credits.crew.length > 0) && (
                 <h2>Credits</h2>
             )
         }

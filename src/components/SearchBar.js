@@ -53,11 +53,11 @@ function SearchBar({ currentCategory, suggestions, onSearch, onCategorySelected,
 
             </Form>
             {suggestions.length > 0 && (
-                <ButtonGroup aria-label="Search Suggestions">
+                <div className="suggestions-list">
                     {
                         suggestions.slice(0, 6).map(s => <Button key={s.id} onClick={() => onSuggestionSelected(s)} variant="secondary">{getShortLabel(s)}</Button>)
                     }
-                </ButtonGroup>
+                </div>
             )}
         </>
     )
